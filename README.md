@@ -1,11 +1,4 @@
-# Aegis Knowledge Ingestion System
-> An End-to-End, Provenance-Preserving Architecture for Heterogeneous & Contradictory Industrial Documentation.
-
-[![Evaluation Score](https://img.shields.io/badge/Benchmark_Accuracy-100%25-brightgreen)](file:///home/alex/Downloads/task-data/EVALUATION_RESULTS.md)
-[![Provenance Recall](https://img.shields.io/badge/Provenance_Recall-100%25-blue)](file:///home/alex/Downloads/task-data/EVALUATION_RESULTS.md)
-[![Hallucination Rate](https://img.shields.io/badge/Hallucination_Rate-0.0%25-success)](file:///home/alex/Downloads/task-data/EVALUATION_RESULTS.md)
-[![Docker Support](https://img.shields.io/badge/Docker-Air--Gapped%20Verified-2496ED)](file:///home/alex/Downloads/task-data/Dockerfile)
-
+## Aegis Knowledge Ingestion and Retrieval System
 ---
 
 ## 1. Quick Start with Docker (Recommended)
@@ -35,6 +28,10 @@ docker run --network none aegis-system python3 evaluate.py
 ## 2. Alternative: Local Run (Without Docker)
 
 If you prefer running directly in a local Python 3.10+ environment:
+[![Evaluation Score](https://img.shields.io/badge/Benchmark_Accuracy-100%25-brightgreen)](file:///home/alex/Downloads/task-data/EVALUATION_RESULTS.md)
+[![Provenance Recall](https://img.shields.io/badge/Provenance_Recall-100%25-blue)](file:///home/alex/Downloads/task-data/EVALUATION_RESULTS.md)
+[![Hallucination Rate](https://img.shields.io/badge/Hallucination_Rate-0.0%25-success)](file:///home/alex/Downloads/task-data/EVALUATION_RESULTS.md)
+[![Docker Support](https://img.shields.io/badge/Docker-Air--Gapped%20Verified-2496ED)](file:///home/alex/Downloads/task-data/Dockerfile)
 
 ```bash
 # 1. Install dependencies
