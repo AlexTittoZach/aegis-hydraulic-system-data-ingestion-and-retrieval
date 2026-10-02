@@ -77,13 +77,13 @@ streamlit run app.py
 
 ---
 
-## 4. What We Chose NOT to Do and Why (Design Trade-offs)
+## 4. What I Chose NOT to Do and Why (Design Trade-offs)
 
-1. **We Chose NOT to Use Naive Vector RAG:**
+1. **Chose NOT to Use Naive Vector RAG:**
    - *Why*: In standard vector embedding space, `PS-04` and `PS-40` have virtually identical embeddings ($\cos \theta \approx 0.98$). Vector retrieval mixes up the main hydraulic discharge sensor with the coolant loop sensor. Furthermore, cosine similarity cannot resolve temporal superseding: an old manual stating 180 bar ranks equally to an ECN stating 200 bar.
-2. **We Chose NOT to Use an LLM for Pure Tabular Data Extraction:**
+2. **Chose NOT to Use an LLM for Pure Tabular Data Extraction:**
    - *Why*: Sending multi-row Excel sheets or JSON config files to an LLM introduces hallucination risk, numeric rounding, and token truncation ("Lost in the Middle"). Deterministic Python parsers (`openpyxl`, `json.load`) run in 2 milliseconds with zero cost and 100% precision.
-3. **We Chose NOT to Guess on Missing Data:**
+3. **Chose NOT to Guess on Missing Data:**
    - *Why*: Industrial safety requires strict abstention. When asked *"Who approved ECN-1058?"* or *"What is the MTBF of IV-21?"*, generic LLMs invent plausible names or statistics. Our engine enforces strict anti-hallucination guardrails and returns `UNDETERMINED`.
 
 ---
@@ -111,5 +111,3 @@ Evaluated against all 23 questions in [`evaluation-questions.pdf`](file:///home/
 - **Trap / Gap Identification:** 4 / 4 (100.0%)
 - **Hallucination Rate:** 0.0%
 
-Detailed question-by-question metrics are available in [EVALUATION_RESULTS.md](file:///home/alex/Downloads/task-data/EVALUATION_RESULTS.md).
-Full architectural specification is documented in [system_architecture_overview.pdf](file:///home/alex/Downloads/task-data/system_architecture_overview.pdf).
