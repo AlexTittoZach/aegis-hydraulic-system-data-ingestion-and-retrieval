@@ -1,5 +1,4 @@
 ## Aegis Knowledge Ingestion and Retrieval System
----
 
 ## 1. Quick Start with Docker (Recommended)
 
