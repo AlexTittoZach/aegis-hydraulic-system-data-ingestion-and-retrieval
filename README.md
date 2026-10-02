@@ -3,18 +3,24 @@
 ## 1. Quick Start with Docker
 The entire application—including local Tesseract OCR, ingestion pipeline, knowledge store, evaluation harness, and Streamlit web interface—is packaged into a single, self-contained, air-gapped container.
 
-### Step 1: Build the Container Image
+### Step 1: Clone the Repository & Navigate to Directory
+```bash
+git clone https://github.com/AlexTittoZach/aegis-hydraulic-system-data-ingestion-and-IKR.git
+cd aegis-hydraulic-system-data-ingestion-and-IKR
+```
+
+### Step 2: Build the Container Image
 ```bash
 docker build -t aegis-system .
 ```
 
-### Step 2: Run the Interactive Web Console
+### Step 3: Run the Interactive Web Console
 ```bash
 docker run -p 8501:8501 aegis-system
 ```
 Open **`http://localhost:8501`** in your browser to access the interactive Query Console.
 
-### Step 3: Run Benchmark in Air-Gapped Mode (Zero Internet)
+### Step 4: Run Benchmark in Air-Gapped Mode (Zero Internet)
 Prove company data privacy by disabling all network access:
 ```bash
 docker run --network none aegis-system python3 evaluate.py
