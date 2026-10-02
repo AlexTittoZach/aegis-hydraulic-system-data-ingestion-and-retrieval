@@ -1,0 +1,784 @@
+{
+  "metadata": {
+    "system_name": "Aegis Series-7 Hydraulic Control System (HCS)",
+    "knowledge_store_version": "1.0",
+    "total_files_indexed": 20,
+    "architecture": "Hybrid Deterministic + Multimodal Extraction with Intermediate Knowledge Representation (IKR)",
+    "msds_noise_filtered": true
+  },
+  "entities": {
+    "PS-04A": {
+      "canonical_id": "PS-04A",
+      "common_name": "Pressure Sensor 04A",
+      "aliases": [
+        "PS-04A",
+        "P04A",
+        "PS04A",
+        "P.S.04-A",
+        "sensor_ps04a",
+        "sensor_ps04a_threshold_bar",
+        "TB-7",
+        "Connector J-14",
+        "PRESSURE XDCR"
+      ],
+      "location": "HPU discharge line",
+      "system": "Hydraulic Power Unit (HPU)",
+      "replaces": "PS-04",
+      "effective_version": ">= 3.2",
+      "status": "ACTIVE",
+      "disambiguation": "Not a form-fit-function replacement for PS-04; requires firmware >= 3.2. Completely distinct from PS-40 (Coolant Loop).",
+      "provenance": "component_register.xlsx, ECN-1042.pdf, wiring_diagram.pdf, screen_03_diagnostics.png"
+    },
+    "PS-04": {
+      "canonical_id": "PS-04",
+      "common_name": "Pressure Sensor 04",
+      "aliases": [
+        "PS-04",
+        "P04",
+        "PS04",
+        "PRESSURE SENSOR 04"
+      ],
+      "location": "HPU discharge line",
+      "system": "Hydraulic Power Unit (HPU)",
+      "superseded_by": "PS-04A",
+      "effective_version": "< 3.2",
+      "status": "SUPERSEDED",
+      "disambiguation": "Original pressure sensor installed prior to Revision 3.2. Suffered signal drift after ~18 months. Completely distinct from PS-40.",
+      "provenance": "component_register.xlsx, ECN-1042.pdf, legacy_manual_v1.html"
+    },
+    "PS-40": {
+      "canonical_id": "PS-40",
+      "common_name": "Pressure Sensor 40",
+      "aliases": [
+        "PS-40",
+        "P40",
+        "PS40"
+      ],
+      "location": "Coolant Loop, Skid B",
+      "system": "Cooling System",
+      "status": "ACTIVE",
+      "disambiguation": "NOT related to HPU discharge circuit. Do not confuse with PS-04 / PS-04A.",
+      "provenance": "component_register.xlsx (Row 6)"
+    },
+    "IV-21": {
+      "canonical_id": "IV-21",
+      "common_name": "Isolation Valve 21",
+      "aliases": [
+        "IV-21",
+        "IV21",
+        "Isolation Valve",
+        "valve_iv21",
+        "IV-21 SOLENOID"
+      ],
+      "location": "Hydraulic Module",
+      "system": "Hydraulic Power Unit (HPU)",
+      "required_prestart_state": "OPEN",
+      "status": "ACTIVE",
+      "notes": "Must be OPEN prior to HPU startup.",
+      "provenance": "component_register.xlsx, operator_manual.pdf, configuration_export.json"
+    },
+    "PLC-03": {
+      "canonical_id": "PLC-03",
+      "common_name": "HCS Controller",
+      "aliases": [
+        "PLC-03",
+        "Controller",
+        "Aegis Controller",
+        "PLC-03 Controller"
+      ],
+      "location": "Control Cabinet 1",
+      "system": "Supervisory Control",
+      "status": "ACTIVE",
+      "reset_restriction": "Do NOT reset controller while hydraulic pressure is above 50 bar.",
+      "provenance": "component_register.xlsx, operator_manual.pdf, maintenance_manual.pdf"
+    },
+    "HPU": {
+      "canonical_id": "HPU",
+      "common_name": "Hydraulic Power Unit",
+      "aliases": [
+        "HPU",
+        "Hydraulic Power Unit",
+        "Hydraulic Unit",
+        "HP unit",
+        "Hydraulic Power Pack"
+      ],
+      "location": "Skid A, Bay 2",
+      "system": "Hydraulic System",
+      "status": "ACTIVE",
+      "provenance": "component_register.xlsx, operator_manual.pdf, maintenance_manual.pdf"
+    },
+    "Auxiliary Reservoir": {
+      "canonical_id": "Auxiliary Reservoir",
+      "common_name": "Auxiliary Reservoir",
+      "aliases": [
+        "Auxiliary Reservoir",
+        "Aux Reservoir"
+      ],
+      "location": "Line 4 / Line 5 Skid",
+      "system": "Hydraulic Fluid Supply",
+      "status": "ACTIVE (Line 4/5 specific)",
+      "notes": "Introduced in training slide deck for Line 4/5 peak demand top-up; NOT covered in standard Operator Manual.",
+      "provenance": "training_slide_excerpt.pptx (Slide 2), system_diagram_hydraulic.pdf"
+    },
+    "Q1": {
+      "canonical_id": "Q1",
+      "common_name": "Main Disconnect",
+      "aliases": [
+        "Q1",
+        "MAIN DISCONNECT Q1"
+      ],
+      "location": "Control Cabinet 1",
+      "voltage_rating": "480V incoming disconnect",
+      "status": "ACTIVE",
+      "provenance": "component_register.xlsx, system_diagram_electrical.png"
+    },
+    "T1": {
+      "canonical_id": "T1",
+      "common_name": "Control Transformer",
+      "aliases": [
+        "T1",
+        "CONTROL XFMR T1"
+      ],
+      "location": "Control Cabinet 1",
+      "voltage_rating": "480:120V control power",
+      "status": "ACTIVE",
+      "provenance": "component_register.xlsx, system_diagram_electrical.png"
+    }
+  },
+  "trust_tiers": {
+    "Tier 1": {
+      "name": "Absolute Authority (Engineering Change Notices)",
+      "sources": [
+        "ECN-1042.pdf",
+        "ECN-1058.pdf"
+      ],
+      "rule": "Overrides all prior manuals from effective date/revision."
+    },
+    "Tier 2": {
+      "name": "Baseline Authority (Official Manuals & Registers)",
+      "sources": [
+        "operator_manual.pdf",
+        "maintenance_manual.pdf",
+        "alarm_reference.pdf",
+        "component_register.xlsx",
+        "revision_history.xlsx",
+        "system_diagram_hydraulic.pdf",
+        "system_diagram_electrical.png",
+        "wiring_diagram.pdf"
+      ],
+      "rule": "Authoritative standard specifications, valid unless superseded by Tier 1."
+    },
+    "Tier 3": {
+      "name": "Historical / Superseded Documentation",
+      "sources": [
+        "legacy_manual_v1.html"
+      ],
+      "rule": "Represents pre-revision historical specifications; not valid for current post-3.2 units."
+    },
+    "Tier 4": {
+      "name": "Informal / Low Trust Field Observations",
+      "sources": [
+        "site_survey_notes.docx"
+      ],
+      "rule": "Anecdotal field notes with uncalibrated tools; never treated as official specification."
+    }
+  },
+  "versioned_parameters": {
+    "hpu_normal_operating_pressure": {
+      "parameter": "Normal HPU Discharge Operating Pressure",
+      "active_value": 200,
+      "unit": "bar",
+      "conditions": "Software Revision >= 3.2, Series-7 units manufactured after 2024",
+      "active_provenance": {
+        "document": "ECN-1042.pdf",
+        "page": 1,
+        "section": "1. Description of Change",
+        "trust_tier": "Tier 1"
+      },
+      "historical_value": 180,
+      "historical_conditions": "Software Revision < 3.2, units prior to revision 3.2",
+      "historical_provenance": {
+        "document": "legacy_manual_v1.html / operator_manual.pdf",
+        "page": 1,
+        "section": "Operating Procedures",
+        "trust_tier": "Tier 2 / Tier 3"
+      },
+      "informal_observation": {
+        "value": 175,
+        "note": "Field technician noted 175 bar on Line 4 local panel, but noted it was measured with an uncalibrated gauge and is unverified.",
+        "document": "site_survey_notes.docx",
+        "trust_tier": "Tier 4"
+      },
+      "scope_applicability": "Only applies to units manufactured after 2024 on rev >= 3.2; units running pre-3.2 firmware remain at 180 bar."
+    },
+    "active_hpu_pressure_sensor": {
+      "parameter": "HPU Discharge Line Pressure Sensor",
+      "current_component": "PS-04A",
+      "current_effective": "Software Revision 3.2 (released 2025-09-30)",
+      "current_provenance": {
+        "document": "ECN-1042.pdf",
+        "page": 1,
+        "trust_tier": "Tier 1"
+      },
+      "prior_component": "PS-04",
+      "prior_effective": "Software Revisions prior to 3.2",
+      "compatibility_note": "PS-04A is NOT a form-fit-function replacement for PS-04; requires firmware >= 3.2."
+    }
+  },
+  "alarms": {
+    "A17": {
+      "code": "A17",
+      "title": "Hydraulic Pressure Low",
+      "condition": "Hydraulic pressure below 150 bar",
+      "panel_indication": "RED",
+      "possible_causes": [
+        "IV-21 closed or partially closed",
+        "Low hydraulic fluid",
+        "Pressure sensor signal invalid"
+      ],
+      "active_sensor": "PS-04 prior to revision 3.2, PS-04A on revision 3.2 and later (updated per ECN-1058)",
+      "action_standard": "See Section 4 of Maintenance Manual AEG-MM-700",
+      "action_if_persists_gt_10s": "Run Shutdown Procedure 4.7 (close IV-21, confirm pressure decay, power OFF, tag out)",
+      "provenance": {
+        "document": "alarm_reference.pdf",
+        "page": 1,
+        "trust_tier": "Tier 2 (incorporates ECN-1058)"
+      }
+    },
+    "A18": {
+      "code": "A18",
+      "title": "Hydraulic Pressure High",
+      "condition": "Hydraulic pressure above 220 bar",
+      "panel_indication": "AMBER",
+      "possible_causes": [
+        "Relief valve fault",
+        "Setpoint misconfiguration"
+      ],
+      "required_action": "Stop the HPU. Do not restart until pressure relief is verified.",
+      "provenance": {
+        "document": "alarm_reference.pdf",
+        "page": 1,
+        "trust_tier": "Tier 2"
+      }
+    },
+    "A19": {
+      "code": "A19",
+      "title": "Pressure Sensor Signal Invalid",
+      "panel_indication": "RED",
+      "possible_causes": [
+        "Sensor wiring fault",
+        "Sensor drift beyond tolerance (see ECN-1042)"
+      ],
+      "required_action": "Replace sensor per Maintenance Manual Section 6.",
+      "provenance": {
+        "document": "alarm_reference.pdf",
+        "page": 1,
+        "trust_tier": "Tier 2"
+      }
+    }
+  },
+  "interlocks": {
+    "hpu_prestart_prerequisites": [
+      "Isolation valve IV-21 is fully OPEN",
+      "Emergency stop circuit is RESET (not latched)",
+      "Maintenance access panel is INSTALLED, CLOSED, and secured",
+      "Hydraulic fluid level is NORMAL (within sight glass band)"
+    ],
+    "provenance": "operator_manual.pdf (Section 4.3), configuration_export.json, training_slide_excerpt.pptx (Slide 3)"
+  },
+  "known_gaps_and_traps": {
+    "ecn1058_approver": {
+      "question": "Who approved engineering bulletin ECN-1058?",
+      "status": "UNDETERMINED",
+      "reason": "ECN-1058 lists ECN Number, Title, Effective, References, and Status ('Released'), but completely omits an approver or author field.",
+      "provenance": "ECN-1058.pdf (Page 1)"
+    },
+    "iv21_mtbf": {
+      "question": "What is the mean time between failures for the isolation valve IV-21?",
+      "status": "UNDETERMINED",
+      "reason": "The documentation corpus does not specify reliability or MTBF metrics for valve IV-21.",
+      "provenance": "None (Absence in manuals and registers)"
+    },
+    "ps04a_max_temp": {
+      "question": "What is the maximum continuous operating temperature of PS-04A?",
+      "status": "UNDETERMINED",
+      "reason": "Neither ECN-1042, the manuals, nor Appendix C specify a maximum continuous operating temperature rating for PS-04A.",
+      "provenance": "None (Absence in manuals and datasheets)"
+    },
+    "voltage_sensor_calibration": {
+      "question": "What is the calibration interval for the electrical system diagram's voltage sensor?",
+      "status": "UNDETERMINED",
+      "reason": "The electrical system diagram (AEG-DWG-E02) does not contain a voltage sensor; no calibration interval exists for this non-existent device.",
+      "provenance": "system_diagram_electrical.png (AEG-DWG-E02)"
+    },
+    "supply_400v_3phase": {
+      "question": "Is the Aegis Series-7 HCS compatible with a 3-phase 400V supply?",
+      "status": "INCOMPATIBLE / NOT SPECIFIED",
+      "reason": "The system electrical schematic and component register specify a 480V incoming disconnect (Q1) and 480:120V control transformer (T1). A 400V supply is not supported by standard documentation.",
+      "provenance": "component_register.xlsx, system_diagram_electrical.png"
+    }
+  },
+  "topology": {
+    "hydraulic": {
+      "source_file": "diagrams/system_diagram_hydraulic.pdf",
+      "type": "hydraulic_schematic",
+      "drawing_number": "AEG-DWG-H01",
+      "controller_direct_connections": [
+        {
+          "target": "PS-04A",
+          "line_type": "purple: control/signal"
+        },
+        {
+          "target": "Hydraulic Power Unit (HPU)",
+          "line_type": "purple: control/signal"
+        },
+        {
+          "target": "IV-21",
+          "line_type": "purple: control/signal"
+        }
+      ],
+      "fluid_circuits": [
+        {
+          "from": "Main Reservoir",
+          "to": "Hydraulic Power Unit (HPU)"
+        },
+        {
+          "from": "Hydraulic Power Unit (HPU)",
+          "to": "IV-21"
+        },
+        {
+          "from": "IV-21",
+          "to": "Press Circuit"
+        },
+        {
+          "from": "Main Reservoir",
+          "to": "Auxiliary Reservoir",
+          "line_type": "tan: reservoir interconnect"
+        }
+      ]
+    },
+    "electrical": {
+      "source_file": "diagrams/system_diagram_electrical.png",
+      "type": "electrical_schematic",
+      "extraction_engine": "Local Tesseract 5.3.4 (Air-gapped)",
+      "drawing_number": "AEG-DWG-E02",
+      "ocr_raw": "Aegis Series-7 HCS \u2014 Electrical Schematic (AEG-DWG-E02)\n\nPower distribution and interlock wiring\n\nMAIN DISCONNECT\nqi\n\n[|\n\nCONTROL XFMR\nT1 480:120V\n\nPLC-03 24VDC\nPOWER SUPPLY\n\nPLC-03 1/0 RACK\n\nE-STOP SAFETY\nRELAY KA1\n\nSENSOR LOOP\nPOWER 24VDC\n\nIV-21 VALVE\nDRIVER\n\nfeeds pressure transducer\nloop (see wiring diagram\nAEG-DWG-W03)",
+      "power_tree": {
+        "incoming_disconnect": {
+          "id": "Q1",
+          "rating": "480V Main Disconnect"
+        },
+        "transformer": {
+          "id": "T1",
+          "ratio": "480:120V Control Transformer"
+        },
+        "dc_power_supply": {
+          "id": "PLC-03 24VDC Power Supply"
+        },
+        "plc_rack": {
+          "id": "PLC-03 I/O Rack"
+        },
+        "safety_relay": {
+          "id": "KA1",
+          "type": "E-Stop Safety Relay"
+        },
+        "sensor_loop": {
+          "power": "24VDC",
+          "feeds": "Pressure Transducer Loop (AEG-DWG-W03)"
+        },
+        "valve_driver": {
+          "target": "IV-21 Valve Driver"
+        }
+      },
+      "watermark_reference": "TB-7 REF: PRESSURE XDCR LOOP",
+      "voltage_sensor_present": false,
+      "voltage_sensor_calibration_interval": null
+    }
+  },
+  "extracted_sources": {
+    "machine_configuration": {
+      "source_file": "configuration/configuration_export.json",
+      "type": "machine_configuration",
+      "content": {
+        "export_metadata": {
+          "system": "Aegis Series-7 HCS",
+          "controller_id": "PLC-03",
+          "firmware_version": "3.2.1",
+          "export_timestamp": "2026-02-03T09:14:22Z",
+          "export_tool": "AegisConfigExport v1.4"
+        },
+        "startup_interlocks": {
+          "valve_iv21_required_state": "OPEN",
+          "estop_required_state": "RESET",
+          "maintenance_panel_required_state": "CLOSED",
+          "fluid_level_required_band": "NORMAL"
+        },
+        "sensors": {
+          "sensor_ps04a_threshold_bar": 200,
+          "sensor_ps04a_alarm_low_bar": 150,
+          "sensor_ps04a_alarm_high_bar": 220,
+          "sensor_ps04a_signal_type": "4-20mA",
+          "sensor_ps40_zone": "coolant_loop",
+          "sensor_ps40_note": "unrelated to HPU discharge circuit; do not map to sensor_ps04a_* keys"
+        },
+        "alarms": {
+          "A17": {
+            "description": "hydraulic_pressure_low",
+            "persistence_before_shutdown_seconds": 10,
+            "shutdown_procedure_ref": "4.7"
+          },
+          "A18": {
+            "description": "hydraulic_pressure_high",
+            "persistence_before_shutdown_seconds": null
+          },
+          "A19": {
+            "description": "pressure_sensor_signal_invalid",
+            "persistence_before_shutdown_seconds": null
+          }
+        },
+        "controller_reset": {
+          "min_pressure_bar_required_for_reset": null,
+          "max_pressure_bar_allowed_for_reset": 50,
+          "note": "reset is blocked in firmware above max_pressure_bar_allowed_for_reset"
+        },
+        "revision_applicability": {
+          "sensor_ps04a_threshold_bar": {
+            "applies_from_firmware": "3.2"
+          },
+          "sensor_ps04_legacy_threshold_bar": {
+            "value": 180,
+            "applies_before_firmware": "3.2"
+          }
+        }
+      }
+    },
+    "component_register": {
+      "source_file": "reference/component_register.xlsx",
+      "type": "spreadsheet",
+      "sheets": {
+        "Components": {
+          "headers": [
+            "Component ID (as printed)",
+            "Common Name",
+            "Known Aliases",
+            "Location",
+            "Status",
+            "Notes"
+          ],
+          "rows": [
+            {
+              "Component ID (as printed)": "HPU",
+              "Common Name": "Hydraulic Power Unit",
+              "Known Aliases": "Hydraulic Unit; HP unit; Hydraulic Power Pack",
+              "Location": "Skid A, Bay 2",
+              "Status": "Active",
+              "Notes": "Primary hydraulic pressure source for the press circuit."
+            },
+            {
+              "Component ID (as printed)": "IV-21",
+              "Common Name": "Isolation Valve 21",
+              "Known Aliases": "Isolation Valve; IV21",
+              "Location": "Hydraulic Module",
+              "Status": "Active",
+              "Notes": "Must be OPEN prior to HPU startup."
+            },
+            {
+              "Component ID (as printed)": "PS-04",
+              "Common Name": "Pressure Sensor 04",
+              "Known Aliases": "PRESSURE SENSOR 04; P04; PS04",
+              "Location": "HPU discharge line",
+              "Status": "Superseded",
+              "Notes": "Superseded by PS-04A effective software rev 3.2. See ECN-1042."
+            },
+            {
+              "Component ID (as printed)": "PS-04A",
+              "Common Name": "Pressure Sensor 04A",
+              "Known Aliases": "P04A; PS04A",
+              "Location": "HPU discharge line",
+              "Status": "Active",
+              "Notes": "Installed per ECN-1042. Requires controller firmware >= 3.2."
+            },
+            {
+              "Component ID (as printed)": "PS-40",
+              "Common Name": "Pressure Sensor 40",
+              "Known Aliases": "P40; PS40",
+              "Location": "Coolant Loop, Skid B",
+              "Status": "Active",
+              "Notes": "NOT related to the HPU discharge circuit. Do not confuse with PS-04 / PS-04A."
+            },
+            {
+              "Component ID (as printed)": "PLC-03",
+              "Common Name": "HCS Controller",
+              "Known Aliases": "Controller; Aegis Controller",
+              "Location": "Control Cabinet 1",
+              "Status": "Active",
+              "Notes": "Supervises startup sequencing, alarms, and interlocks."
+            },
+            {
+              "Component ID (as printed)": "A17",
+              "Common Name": "Alarm: Hydraulic Pressure Low",
+              "Known Aliases": "\u2014",
+              "Location": "N/A (software alarm)",
+              "Status": "Active",
+              "Notes": "See Alarm Reference AEG-AL-700 for thresholds and required actions."
+            },
+            {
+              "Component ID (as printed)": "A18",
+              "Common Name": "Alarm: Hydraulic Pressure High",
+              "Known Aliases": "\u2014",
+              "Location": "N/A (software alarm)",
+              "Status": "Active",
+              "Notes": "See Alarm Reference AEG-AL-700."
+            },
+            {
+              "Component ID (as printed)": "A19",
+              "Common Name": "Alarm: Pressure Sensor Signal Invalid",
+              "Known Aliases": "\u2014",
+              "Location": "N/A (software alarm)",
+              "Status": "Active",
+              "Notes": "See Alarm Reference AEG-AL-700."
+            },
+            {
+              "Component ID (as printed)": "TB-7",
+              "Common Name": "Terminal Block 7",
+              "Known Aliases": "\u2014",
+              "Location": "Control Cabinet 1",
+              "Status": "Active",
+              "Notes": "Wiring reference only, used in AEG-DWG-W03; corresponds to the PS-04A signal loop."
+            },
+            {
+              "Component ID (as printed)": "Q1",
+              "Common Name": "Main Disconnect",
+              "Known Aliases": "\u2014",
+              "Location": "Control Cabinet 1",
+              "Status": "Active",
+              "Notes": "480V incoming disconnect."
+            },
+            {
+              "Component ID (as printed)": "T1",
+              "Common Name": "Control Transformer",
+              "Known Aliases": "\u2014",
+              "Location": "Control Cabinet 1",
+              "Status": "Active",
+              "Notes": "480:120V control power."
+            }
+          ]
+        }
+      }
+    },
+    "revision_history": {
+      "source_file": "reference/revision_history.xlsx",
+      "type": "spreadsheet",
+      "sheets": {
+        "Revision History": {
+          "headers": [
+            "Software Revision",
+            "Release Date",
+            "Summary of Changes",
+            "Related Documents"
+          ],
+          "rows": [
+            {
+              "Software Revision": "3.0",
+              "Release Date": "2023-06-02",
+              "Summary of Changes": "Initial Series-7 release.",
+              "Related Documents": "AEG-OM-700 Rev 1, AEG-MM-700 Rev 1"
+            },
+            {
+              "Software Revision": "3.1",
+              "Release Date": "2024-02-14",
+              "Summary of Changes": "Minor HMI diagnostics screen updates. No change to sensors or setpoints.",
+              "Related Documents": "AEG-OM-700 Rev 2"
+            },
+            {
+              "Software Revision": "3.2",
+              "Release Date": "2025-09-30",
+              "Summary of Changes": "Pressure sensor PS-04 replaced by PS-04A. Normal HPU discharge pressure setpoint changed from 180 bar to 200 bar. See ECN-1042.",
+              "Related Documents": "ECN-1042, AEG-OM-700 Rev 3, AEG-MM-700 Rev 2, AEG-CR-700 Rev 2"
+            },
+            {
+              "Software Revision": "3.2.1",
+              "Release Date": "2025-11-18",
+              "Summary of Changes": "Documentation correction: Alarm A17 condition text no longer names a specific sensor (PS-04 or PS-04A) so it reads correctly on units at either revision. Alarm thresholds unchanged. See ECN-1058.",
+              "Related Documents": "ECN-1058, AEG-AL-700 Rev 5"
+            },
+            {
+              "Software Revision": "3.3",
+              "Release Date": "2026-04-07 (planned)",
+              "Summary of Changes": "Scheduled: extended diagnostics logging. No sensor or setpoint changes currently planned.",
+              "Related Documents": "Not yet published"
+            }
+          ]
+        }
+      }
+    },
+    "training_slides": {
+      "source_file": "extra/training_slide_excerpt.pptx",
+      "type": "presentation_slides",
+      "slides": [
+        {
+          "slide_number": 1,
+          "text": "Aegis Series-7 HCS New Operator Orientation \u2014 Hydraulic Power Unit Basics Training Excerpt \u2014 Slides 4\u20136 of the full deck",
+          "items": [
+            "Aegis Series-7 HCS",
+            "New Operator Orientation \u2014 Hydraulic Power Unit Basics",
+            "Training Excerpt \u2014 Slides 4\u20136 of the full deck"
+          ]
+        },
+        {
+          "slide_number": 2,
+          "text": "What is the HPU? The Hydraulic Power Unit is the heart of the press's hydraulic system. You'll sometimes hear techs call it the \"hydraulic pack\" or just \"the unit\" \u2014 same thing. It pulls fluid from the main reservoir and, on most Line 4/5 configurations, tops up from a smaller Auxiliary Reservoir during peak demand. Discharge pressure is what the controller watches to decide if the unit is running normally. Note: \u201cAuxiliary Reservoir\u201d is a Line 4/5-specific configuration detail and is not covered in the standard Operator Manual.",
+          "items": [
+            "What is the HPU?",
+            "The Hydraulic Power Unit is the heart of the press's hydraulic system.",
+            "You'll sometimes hear techs call it the \"hydraulic pack\" or just \"the unit\" \u2014 same thing.",
+            "It pulls fluid from the main reservoir and, on most Line 4/5 configurations, tops up from a smaller Auxiliary Reservoir during peak demand.",
+            "Discharge pressure is what the controller watches to decide if the unit is running normally.",
+            "Note: \u201cAuxiliary Reservoir\u201d is a Line 4/5-specific configuration detail and is not covered in the standard Operator Manual."
+          ]
+        },
+        {
+          "slide_number": 3,
+          "text": "Before You Press Start These four checks match the startup interlocks shown on the HOME screen of the HMI. Full startup and shutdown procedures are in the Operator Manual (AEG-OM-700) \u2014 this slide is a quick memory aid only, not a replacement procedure.",
+          "items": [
+            "Before You Press Start",
+            "These four checks match the startup interlocks shown on the HOME screen of the HMI.",
+            "Full startup and shutdown procedures are in the Operator Manual (AEG-OM-700) \u2014 this slide is a quick memory aid only, not a replacement procedure."
+          ]
+        }
+      ]
+    },
+    "hmi_home": {
+      "source_file": "screenshots/screen_01_home.png",
+      "type": "hmi_screen",
+      "extraction_engine": "Local Tesseract 5.3.4 (Air-gapped)",
+      "ocr_raw": "AEGIS SERIES-7 HCS \u2014 HOME SW REV 3.2\n\nHPU DISCHARGE PRESSURE STARTUP INTERLOCKS\n\nIV-21 (Isolation Valve) OPEN\nRESET\n\n200 bar Emergency Stop closep\n\nMaintenance Panel\n\na NORMAL\nSTATUS: RUNNING \u2014 NORMAL Hydraulic Fluid Level\nACTIVE COMPONENT SUMMARY\nHP unit PLC-03 controlled RUBIN\nPS-04A discharge pressure sensor ls\nI-21 isolation valve OPEN\u201c\n\nTouch ALARMS for active/historical alarm list. Touch DIAGNOSTICS for sensor-level detail",
+      "live_readings": {
+        "hpu_discharge_pressure_bar": 200,
+        "status": "RUNNING \u2014 NORMAL"
+      },
+      "startup_interlocks_displayed": {
+        "iv21_isolation_valve": "OPEN",
+        "emergency_stop": "RESET",
+        "maintenance_panel": "CLOSED",
+        "hydraulic_fluid_level": "NORMAL"
+      },
+      "active_components": {
+        "HP unit": {
+          "controller": "PLC-03",
+          "status": "RUNNING"
+        },
+        "PS-04A": {
+          "role": "discharge pressure sensor",
+          "status": "OK"
+        },
+        "IV-21": {
+          "role": "isolation valve",
+          "status": "OPEN"
+        }
+      }
+    },
+    "hmi_alarms": {
+      "source_file": "screenshots/screen_02_alarms.png",
+      "type": "hmi_screen",
+      "extraction_engine": "Local Tesseract 5.3.4 (Air-gapped)",
+      "ocr_raw": "AEGIS SERIES-7 HCS \u2014 ALARM LIST\n\nSW REV 3.2\n\nAlarm A17 active for 00:00:14 \u2014 Shutdown Procedure 4.7 threshold: 00:00:10\n\n# TAG DESCRIPTION STATE TIME\n\n1 Al7 Hydraulic Pressure Low CLEARED 08:14:02\n\n2 Ald Pressure Sensor Signal Invalid CLEARED 03-11 22:40\n3 Al7 Hydraulic Pressure Low ACTIVE 08:14:57\n\n4 Al8 Hydraulic Pressure High INACTIVE -",
+      "alarm_condition_note": "Alarm A17 active for 00:00:14 \u2014 Shutdown Procedure 4.7 threshold: 00:00:10",
+      "active_alarm": "A17 (Hydraulic Pressure Low, ACTIVE > 10s)"
+    },
+    "hmi_diagnostics": {
+      "source_file": "screenshots/screen_03_diagnostics.png",
+      "type": "hmi_screen",
+      "extraction_engine": "Local Tesseract 5.3.4 (Air-gapped)",
+      "ocr_raw": "AEGIS SERIES-7 HCS \u2014 DIAGNOSTICS SW REV 3.2\n\nSENSOR DIAGNOSTICS\n\nTag P.S.04-A\nSignal Type <=2X0 eS\nRaw Reading SD\n\n200.3 bar\n\nScaled Value\n\nCalibration Status WITHIN TOLERANCE\n\nLast Calibrated 2026-01-09\n\nFirmware Rev. S2n0\n\nNote: this screen displays the sensor tag as printed on the physical unit label.",
+      "diagnostics": {
+        "tag_as_printed_on_unit_label": "P.S.04-A",
+        "signal_type": "4-20 mA",
+        "raw_reading_mA": 14.8,
+        "scaled_value_bar": 200.3,
+        "calibration_status": "WITHIN TOLERANCE",
+        "last_calibrated": "2026-01-09",
+        "firmware_rev": "3.2.1"
+      },
+      "note": "Note: this screen displays the sensor tag as printed on the physical unit label."
+    },
+    "scanned_calibration": {
+      "source_file": "scans/scanned_appendix_calibration.pdf",
+      "type": "scanned_calibration_record",
+      "extraction_engine": "Local pdftoppm + Tesseract 5.3.4 (Air-gapped)",
+      "ocr_raw": "APPENDIX C \u2014 SENSOR CALIBRATION RECORD\n\n\u2018Aegis Serles-7 HCS (scanned from feld service binder, uncontrolled copy)\n\nSensor Tag: PS-04A\nLocation: HPU discharge line\nCalibration Date: 2026-01-09\nTechnician: R. Okafor\n\nCalibration Points\n\nPoint Reference\nZero (0%) O bar 0.1 bar\nMid (50%) 100 bar 99.6 bar\nSpan (100%) 200 bar 199.4 bar\n\nNote: this calibration record supersedes the field data sheet used prior to the\nPS-04 to PS-O4A sensor change (see ECN-1042). Span reference target is 200 bar,\nConsistent with the software revision 3.2 operating pressure setpoint.\n\nPrior sensor (PS-04) span reference target was 180 bar \u2014 for historical\ncomparison only. Do not use the 180 bar figure to evaluate PS-O4A.\n\nNo calibration interval is specified for PS-O4A on this form; recalibration\nfrequency should be confirmed against the applicable maintenance schedule,\nWhich is not included in this binder.\n\nSignature: Date:\n\nPage 1 of 1 \u2014 scanned copy. quality varies",
+      "appendix": "Appendix C \u2014 Sensor Calibration Record",
+      "sensor_tag": "PS-04A",
+      "location": "HPU discharge line",
+      "calibration_date": "2026-01-09",
+      "technician": "R. Okafor",
+      "calibration_points": [
+        {
+          "point": "Zero (0%)",
+          "reference_bar": 0,
+          "reading_bar": 0.1,
+          "result": "PASS"
+        },
+        {
+          "point": "Mid (50%)",
+          "reference_bar": 100,
+          "reading_bar": 99.6,
+          "result": "PASS"
+        },
+        {
+          "point": "Span (100%)",
+          "reference_bar": 200,
+          "reading_bar": 199.4,
+          "result": "PASS"
+        }
+      ],
+      "historical_note": "Supersedes field data sheet used prior to PS-04 to PS-04A change (ECN-1042). Prior PS-04 span target was 180 bar (historical only).",
+      "calibration_interval_specified": false,
+      "calibration_interval_note": "No calibration interval is specified for PS-04A on this form; recalibration frequency should be confirmed against maintenance schedule (not included)."
+    },
+    "legacy_manual_html": {
+      "source_file": "manuals/legacy_manual_v1.html",
+      "type": "legacy_manual_html",
+      "title": "Aegis Series-7 Hydraulic Control System - Operator Manual (v1, legacy export)",
+      "sections": [
+        {
+          "title": "Aegis Series-7 Hydraulic Control System \u2014 Operator Manual",
+          "paragraphs": [
+            "Document AEG-OM-700, Revision 1 (superseded). Applies to software revisions 3.0 and 3.1 only."
+          ]
+        },
+        {
+          "title": "1. Overview",
+          "paragraphs": [
+            "The Aegis Series-7 Hydraulic Control System provides closed-loop hydraulic pressure regulation\nfor industrial press lines. The system is built around the Hydraulic Power Pack, which supplies\npressurized fluid to the press circuit under the supervision of the Aegis Controller."
+          ]
+        },
+        {
+          "title": "4. Starting the Hydraulic Power Pack",
+          "paragraphs": [
+            "Before starting, verify:",
+            "Hydraulic fluid level is within the normal band.",
+            "Isolation valve IV-21 is open.",
+            "Emergency stop is reset.",
+            "Turn the POWER selector to ON.",
+            "Press START.",
+            "Verify pressure reaches180 bar."
+          ]
+        },
+        {
+          "title": "5. Normal Operating Ranges",
+          "paragraphs": [
+            "Normal HPU discharge pressure is 180 bar, as measured by pressure sensor PS-04."
+          ]
+        },
+        {
+          "title": "6. Alarms",
+          "paragraphs": [
+            "See the Aegis Alarm Reference for alarm A17 (Hydraulic Pressure Low) and related codes.",
+            "This legacy export does not reflect ECN-1042 (PS-04 to PS-04A sensor change and pressure setpoint\nupdate to 200 bar, effective software revision 3.2) or ECN-1058. Do not use this document as the\nsole reference for units running software revision 3.2 or later."
+          ]
+        }
+      ]
+    }
+  }
+}
