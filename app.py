@@ -4,6 +4,9 @@ Run with: streamlit run app.py
 """
 
 import html
+import os
+from urllib.parse import quote
+
 import streamlit as st
 
 from src.query_engine import AegisQueryEngine
@@ -29,6 +32,7 @@ st.markdown(
     --ok: #15803d;
     --scope: #1d4ed8;
     --warn: #b45309;
+    --header-gap: 80px;   /* space between the subtitle and the search bar */
 }
 
 html { font-size: 18px; }
@@ -40,38 +44,55 @@ html, body, .stApp, .stApp * { font-family: 'IBM Plex Sans', -apple-system, 'Seg
 #MainMenu, footer, header, [data-testid="stToolbar"] { display: none !important; }
 
 /* header */
-.app-title { font-size: 1.8rem; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; margin: 0; }
-.app-sub   { font-size: 1rem; color: var(--muted); margin: 2px 0 16px; }
+.app-title { text-align: center; font-size: 1.8rem; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; margin: 0; }
+.app-sub   { text-align: center; font-size: 1rem; color: var(--muted); margin: 2px 0 var(--header-gap); }
 
 /* search form */
 [data-testid="stForm"] { border: 0 !important; padding: 0 !important; }
 .stTextInput [data-baseweb="input"], .stTextInput [data-baseweb="base-input"] {
-    background: #fff !important; border-radius: 8px !important;
+    background: #fff !important; border-radius: 8px !important; height: 54px !important; min-height: 54px !important;
 }
 .stTextInput input {
     border: 1px solid #cbd5e1 !important; border-radius: 8px !important;
-    padding: 14px 16px !important; font-size: 1.1rem !important; background: #fff !important;
+    height: 54px !important; box-sizing: border-box; padding: 0 16px !important; font-size: 1.1rem !important; background: #fff !important;
     color: var(--ink) !important; -webkit-text-fill-color: var(--ink) !important;
     caret-color: var(--ink) !important; box-shadow: none !important;
 }
 .stTextInput input::placeholder { color: #94a3b8 !important; -webkit-text-fill-color: #94a3b8 !important; opacity: 1; }
 .stTextInput input:focus { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(31,78,121,.12) !important; }
+[data-testid="stForm"] [data-testid="stElementContainer"] { width: 100% !important; }
+.stFormSubmitButton, .stFormSubmitButton button { width: 100% !important; }
 .stFormSubmitButton button {
+    height: 54px; border-radius: 8px !important; font-size: 1.05rem; font-weight: 500; padding: 0 12px;
+    background: #fff !important; color: var(--text) !important; border: 1px solid #cbd5e1 !important;
+}
+.stFormSubmitButton button:hover { border-color: var(--accent) !important; color: var(--accent) !important; }
+/* Search = filled accent button */
+.stFormSubmitButton button[kind="primaryFormSubmit"],
+.stFormSubmitButton button[data-testid="stBaseButton-primaryFormSubmit"] {
     background: var(--accent) !important; color: #fff !important; border: 0 !important;
-    border-radius: 8px !important; height: 54px; font-size: 1.05rem; font-weight: 500; width: 100%;
 }
-.stFormSubmitButton button:hover { background: var(--ink) !important; }
+.stFormSubmitButton button[kind="primaryFormSubmit"]:hover,
+.stFormSubmitButton button[data-testid="stBaseButton-primaryFormSubmit"]:hover {
+    background: var(--ink) !important; color: #fff !important;
+}
 
-/* example questions: boxed cards */
-.stButton button {
-    background: #fff; color: var(--text); border: 1px solid var(--line);
-    border-radius: 10px; text-align: left; justify-content: flex-start; align-items: flex-start;
-    padding: 14px 16px; font-size: 1.02rem; line-height: 1.45; width: 100%; height: auto;
-    transition: border-color .15s, color .15s;
+/* example questions: aligned card grid */
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 14px; }
+.card {
+    display: block; box-sizing: border-box; padding: 16px 18px; min-height: 96px;
+    border: 1px solid var(--line); border-radius: 10px; background: #fff;
+    color: var(--text) !important; text-decoration: none !important;
+    font-size: 1.02rem; line-height: 1.45; transition: border-color .15s, color .15s, box-shadow .15s;
 }
-.stButton button p { text-align: left; white-space: normal; }
-.stButton button:hover { color: var(--accent); border-color: var(--accent); background: #fff; }
-[class*="st-key-ex"] button, [class*="st-key-un"] button { min-height: 96px; }
+.cards .card:last-child:nth-child(3n+1) { grid-column: 1 / -1; min-height: 0; }
+.card:hover { border-color: var(--accent); color: var(--accent) !important; box-shadow: 0 1px 6px rgba(31,78,121,.10); }
+@media (max-width: 900px) {
+    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cards .card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) { .cards { grid-template-columns: 1fr; } }
+
 .group-label { font-size: 0.95rem; color: var(--muted); margin: 14px 0 4px; }
 
 /* results: two panels that fit the viewport */
@@ -108,6 +129,13 @@ def load_engine():
 engine = load_engine()
 
 
+@st.cache_data(show_spinner=False)
+def cached_answer(query: str, kb_mtime: float):
+    """Remember answers so repeat questions are instant.
+    kb_mtime makes the cache refresh automatically when knowledge_store.json changes."""
+    return engine.answer_question(query)
+
+
 def esc(value) -> str:
     """Escape text for safe HTML and keep line breaks."""
     return html.escape(str(value)).replace("\n", "<br>")
@@ -117,11 +145,12 @@ def esc(value) -> str:
 st.session_state.setdefault("q", "")
 st.session_state.setdefault("active", "")
 
-
-def pick(question: str):
-    st.session_state.q = question
-    st.session_state.active = question
-
+# A clicked example card arrives as ?q=... in the URL
+_qp = st.query_params.get("q")
+if _qp:
+    st.session_state.q = _qp
+    st.session_state.active = _qp
+    st.query_params.clear()
 
 EXAMPLES = [
     "What is the current normal operating pressure for the HPU, and under what conditions does that apply?",
@@ -132,57 +161,53 @@ EXAMPLES = [
     "Under what circumstances must the controller not be reset?",
     "Which components connect directly to the HCS controller, according to the hydraulic schematic?",
 ]
-UNANSWERABLE = [
-    "Who approved engineering bulletin ECN-1058?",
-    "What is the calibration interval for the electrical system diagram's voltage sensor?",
-    "What is the mean time between failures for the isolation valve IV-21?",
-]
 
 # ---------------------------------------------------------------- header + search
-h_left, h_right = st.columns([5, 1], vertical_alignment="center")
-with h_left:
-    st.markdown('<div class="app-title">Aegis Knowledge Corpus</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="app-sub">Answers from the system documents, with the source for every claim.</div>',
-        unsafe_allow_html=True,
-    )
-if st.session_state.active:
-    h_right.button("New question", key="reset", on_click=lambda: st.session_state.update(q="", active=""))
+st.markdown('<div class="app-title">Aegis Knowledge Corpus</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="app-sub">Answers from the system documents, with the source for every claim.</div>',
+    unsafe_allow_html=True,
+)
 
+# Make the form buttons fill their columns (parameter name differs across Streamlit versions)
+import inspect
+
+_params = inspect.signature(st.form_submit_button).parameters
+STRETCH = {"width": "stretch"} if "width" in _params else {"use_container_width": True}
+
+
+def clear_search():
+    st.session_state.q = ""
+    st.session_state.active = ""
+
+
+# One row: [ search box ] [ Search ] [ New question ]
 with st.form("search", clear_on_submit=False):
-    c_input, c_btn = st.columns([5, 1.2], vertical_alignment="center")
+    c_input, c_search, c_new = st.columns([6, 1.3, 1.8], vertical_alignment="center")
     c_input.text_input(
         "Question",
         key="q",
         placeholder="Ask a question about the Aegis Series-7 system",
         label_visibility="collapsed",
     )
-    if c_btn.form_submit_button("Search"):
+    if c_search.form_submit_button("Search", type="primary", **STRETCH):
         st.session_state.active = st.session_state.q.strip()
+    c_new.form_submit_button("New question", on_click=clear_search, **STRETCH)
 
 query = st.session_state.active
 
-
 # ---------------------------------------------------------------- empty state: examples
-def grid(items, prefix, per_row=3):
-    """Render questions as separate boxes, several per row."""
-    for start in range(0, len(items), per_row):
-        cols = st.columns(per_row)
-        for j, ex in enumerate(items[start:start + per_row]):
-            cols[j].button(ex, key=f"{prefix}{start + j}", on_click=pick, args=(ex,))
-
-
 if not query:
+    cards = "".join(
+        f'<a class="card" href="?q={quote(ex)}" target="_self">{html.escape(ex)}</a>' for ex in EXAMPLES
+    )
     st.markdown('<div class="group-label">Try a question</div>', unsafe_allow_html=True)
-    grid(EXAMPLES, "ex")
-
-    st.markdown('<div class="group-label">Questions the documents cannot answer</div>', unsafe_allow_html=True)
-    grid(UNANSWERABLE, "un")
+    st.markdown(f'<div class="cards">{cards}</div>', unsafe_allow_html=True)
     st.stop()
 
 # ---------------------------------------------------------------- result
 with st.spinner("Searching…"):
-    res = engine.answer_question(query)
+    res = cached_answer(query, os.path.getmtime(KB_PATH))
 
 status = res.get("status", "")
 if "UNDETERMINED" in status:
