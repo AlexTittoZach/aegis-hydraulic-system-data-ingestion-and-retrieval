@@ -4,6 +4,7 @@ Run with: streamlit run app.py
 """
 
 import html
+import inspect
 import os
 from urllib.parse import quote
 
@@ -33,6 +34,7 @@ st.markdown(
     --scope: #1d4ed8;
     --warn: #b45309;
     --header-gap: 80px;   /* space between the subtitle and the search bar */
+    --panel-offset: 330px; /* height used above the result panels; raise it if the page scrolls */
 }
 
 html { font-size: 18px; }
@@ -76,6 +78,8 @@ html, body, .stApp, .stApp * { font-family: 'IBM Plex Sans', -apple-system, 'Seg
 .stFormSubmitButton button[data-testid="stBaseButton-primaryFormSubmit"]:hover {
     background: var(--ink) !important; color: #fff !important;
 }
+/* button labels must never get their own background (this caused the white box over "Search") */
+.stFormSubmitButton button * { background: transparent !important; }
 
 /* example questions: aligned card grid */
 .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 14px; }
@@ -96,7 +100,7 @@ html, body, .stApp, .stApp * { font-family: 'IBM Plex Sans', -apple-system, 'Seg
 .group-label { font-size: 0.95rem; color: var(--muted); margin: 14px 0 4px; }
 
 /* results: two panels that fit the viewport */
-.panel { max-height: calc(100vh - 290px); overflow-y: auto; padding-right: 10px; }
+.panel { max-height: calc(100vh - var(--panel-offset)); overflow-y: auto; padding-right: 10px; }
 .panel::-webkit-scrollbar { width: 6px; }
 .panel::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 .answer { border-left: 3px solid var(--c); padding: 2px 0 2px 18px; margin: 0 0 6px; }
@@ -112,6 +116,17 @@ html, body, .stApp, .stApp * { font-family: 'IBM Plex Sans', -apple-system, 'Seg
 .row .claim { font-size: 0.98rem; line-height: 1.45; }
 .row .meta  { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
 .note { font-size: 0.95rem; line-height: 1.45; padding: 6px 0 6px 12px; border-left: 2px solid var(--c); margin: 6px 0; }
+
+/* smooth reruns: no dimming, white page background (only on page-level containers) */
+[data-stale="true"] { opacity: 1 !important; transition: none !important; }
+[data-testid="stStatusWidget"] { display: none !important; }
+html, body, .stApp, [data-testid="stAppViewContainer"],
+[data-testid="stAppViewBlockContainer"], .main, .block-container { background-color: #fff !important; }
+[data-testid="stSkeleton"] { display: none !important; }
+
+.results { display: grid; grid-template-columns: 5fr 7fr; gap: 3rem; animation: fadeIn .2s ease; }
+@media (max-width: 900px) { .results { grid-template-columns: 1fr; gap: 1.5rem; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 """,
     unsafe_allow_html=True,
@@ -170,8 +185,6 @@ st.markdown(
 )
 
 # Make the form buttons fill their columns (parameter name differs across Streamlit versions)
-import inspect
-
 _params = inspect.signature(st.form_submit_button).parameters
 STRETCH = {"width": "stretch"} if "width" in _params else {"use_container_width": True}
 
@@ -196,18 +209,29 @@ with st.form("search", clear_on_submit=False):
 
 query = st.session_state.active
 
-# ---------------------------------------------------------------- empty state: examples
+# ---------------------------------------------------------------- results area (one slot, replaced in place)
+slot = st.empty()
+
 if not query:
     cards = "".join(
         f'<a class="card" href="?q={quote(ex)}" target="_self">{html.escape(ex)}</a>' for ex in EXAMPLES
     )
-    st.markdown('<div class="group-label">Try a question</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="cards">{cards}</div>', unsafe_allow_html=True)
+    slot.markdown(
+        '<div class="group-label">Try a question</div>' f'<div class="cards">{cards}</div>',
+        unsafe_allow_html=True,
+    )
     st.stop()
 
-# ---------------------------------------------------------------- result
-with st.spinner("Searching…"):
+
+try:
     res = cached_answer(query, os.path.getmtime(KB_PATH))
+except Exception as exc:  # show a readable message instead of a Streamlit traceback
+    slot.markdown(
+        f'<div class="answer s-gap"><div class="status">Something went wrong</div>'
+        f'<div class="text">{esc(exc)}</div></div>',
+        unsafe_allow_html=True,
+    )
+    st.stop()
 
 status = res.get("status", "")
 if "UNDETERMINED" in status:
@@ -249,6 +273,7 @@ if claims:
         )
     right_html = f'<div class="sec-title">Evidence ({len(claims)})</div>' + "".join(rows)
 
-col_a, col_b = st.columns([5, 7], gap="large")
-col_a.markdown(f'<div class="panel">{left_html}</div>', unsafe_allow_html=True)
-col_b.markdown(f'<div class="panel">{right_html}</div>', unsafe_allow_html=True)
+slot.markdown(
+    f'<div class="results"><div class="panel">{left_html}</div><div class="panel">{right_html}</div></div>',
+    unsafe_allow_html=True,
+)
