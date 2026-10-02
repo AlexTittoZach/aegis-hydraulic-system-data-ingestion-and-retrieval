@@ -1,7 +1,6 @@
 ## Aegis Knowledge Ingestion and Retrieval System
 
-## 1. Quick Start with Docker (Recommended)
-
+## 1. Quick Start with Docker
 The entire application—including local Tesseract OCR, ingestion pipeline, knowledge store, evaluation harness, and Streamlit web interface—is packaged into a single, self-contained, air-gapped container.
 
 ### Step 1: Build the Container Image
