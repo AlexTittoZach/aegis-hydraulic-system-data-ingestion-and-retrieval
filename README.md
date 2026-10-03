@@ -24,7 +24,7 @@ Evaluated against all 23 competition questions with zero external data transmiss
 
 ---
 
-## 2. Quick Start with Docker (100% Air-Gapped)
+## 2. Quick Start with Docker
 
 The entire application—including local SLM weights, embedding models, vector indices, evaluation harness, and Streamlit web console—is built into a single self-contained container.
 
@@ -77,7 +77,7 @@ python3 query.py "What voltage does transformer T1 step down?"
 
 ---
 
-## 4. System Architecture Overview
+## 4. Architecture
 
 ```
 [Raw 20 Files (8 Formats)]
@@ -122,14 +122,14 @@ python3 query.py "What voltage does transformer T1 step down?"
 
 ---
 
-## 5. Architectural Design Decisions & Trade-offs
+## 5. Design Decisions
 
 ### 1. Why Naive Vector RAG Fails Alone & Why Hybrid Retrieval is Required
-In a pure vector embedding space, component codes like `PS-04` (Hydraulic Power Unit sensor) and `PS-40` (Coolant Loop sensor) have virtually identical semantic vector embeddings ($\cos \theta > 0.95$). Pure vector retrieval repeatedly confuses these two distinct sensors. 
+In a pure vector embedding space, component codes like `PS-04` and `PS-40` have virtually identical semantic vector embeddings. Pure vector retrieval repeatedly confuses these two distinct sensors. 
 
-Our **Hybrid Retriever** solves this by fusing:
+**Hybrid Retriever** solves this by fusing:
 - **BGE-small-en-v1.5 Dense Embeddings**: Captures natural language intent and conceptual meaning.
-- **BM25Okapi Lexical Matching**: Enforces strict keyword matches for technical tokens, part numbers, and alarm codes (`PS-04`, `PS-40`, `A17`, `A18`, `T1`).
+- **BM25        **: Enforces strict keyword matches for technical tokens, part numbers, and alarm codes (`PS-04`, `PS-40`, `A17`, `A18`, `T1`).
 - **Technical Tokenizer & Stopword Filter**: Strips generic English stopwords (`"what"`, `"is"`, `"the"`) so off-topic queries score `0.00` in BM25, triggering the anti-hallucination gate.
 
 ### 2. Decoupled Provenance Authority (Zero Citation Hallucination)
