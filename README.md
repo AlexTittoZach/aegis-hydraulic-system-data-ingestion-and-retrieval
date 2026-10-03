@@ -30,8 +30,8 @@ The entire application—including local SLM weights, embedding models, vector i
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/AlexTittoZach/aegis-hydraulic-system-data-ingestion-and-IKR.git
-cd aegis-hydraulic-system-data-ingestion-and-IKR
+git clone https://github.com/AlexTittoZach/aegis-hydraulic-system-data-ingestion-and-retrieval.git
+cd aegis-hydraulic-system-data-ingestion-and-retrieval
 ```
 
 ### Step 2: Build the Container Image
