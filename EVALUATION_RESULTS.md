@@ -92,4 +92,4 @@ Or execute inside Docker in full air-gapped isolation:
 ```bash
 docker run --network none aegis-system python3 evaluate.py
 ```
-Outputs are automatically written to [`evaluation_results.json`] and printed to terminal stdout.
+Outputs are automatically written to `evaluation_results.json` and printed to terminal stdout.
