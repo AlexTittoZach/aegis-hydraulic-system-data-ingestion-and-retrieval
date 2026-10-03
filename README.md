@@ -2,7 +2,7 @@
 
 An air-gapped, zero-hallucination Industrial AI system for the **Aegis Series-7 Hydraulic Control System (HCS)**. Combines **Hybrid Dense + Lexical Retrieval (BGE-small + BM25Okapi)** with **Grounded SLM Generation (Qwen-2.5-1.5B via llama.cpp)** and deterministic citation binding.
 
-Adheres strictly to the **Three-Part Provenance Contract**:
+**Output contains**:
 1. **Direct Answer**: Synthesized by local SLM, strictly grounded in retrieved facts.
 2. **Verifiable Claims & Citations**: Bound deterministically from Knowledge Card metadata (document, sheet, page, and trust tier).
 3. **Expressed Uncertainties & Gaps**: Immediate abstention on out-of-scope queries or documented engineering gaps.
