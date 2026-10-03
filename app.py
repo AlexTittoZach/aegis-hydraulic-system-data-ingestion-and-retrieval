@@ -10,7 +10,7 @@ from urllib.parse import quote
 
 import streamlit as st
 
-from src.query_engine import AegisQueryEngine
+from src.rag_engine import AegisRAGEngine
 
 st.set_page_config(
     page_title="Aegis Knowledge Corpus",
@@ -35,12 +35,52 @@ st.markdown(
     --warn: #b45309;
     --header-gap: 80px;   /* space between the subtitle and the search bar */
     --panel-offset: 330px; /* height used above the result panels; raise it if the page scrolls */
+
+    /* dot-matrix background */
+    --dot-color: #cfd6df;   /* static dots */
+    --dot-glow: #1f4e79;    /* animated sweep colour */
+    --dot-size: 22px;       /* spacing between dots */
+    --content-half: 620px;  /* dots stay outside this half-width around the centre */
+    --sweep-time: 10s;      /* one sweep; set animation to none below to turn the motion off */
 }
 
 html { font-size: 18px; }
 html, body, .stApp, .stApp * { font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif; }
 .stApp { background: #fff; color: var(--text); }
-.block-container { max-width: 1240px !important; margin: 0 auto; padding-top: 2rem; padding-bottom: 1rem; }
+.block-container { max-width: 1240px !important; margin: 0 auto; padding-top: 2rem; padding-bottom: 1rem; position: relative; z-index: 1; }
+
+/* ---- dot-matrix background (side areas only, fades out toward the content) ---- */
+.stApp::before, .stApp::after {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-size: var(--dot-size) var(--dot-size);
+}
+.stApp::before {
+    background-image: radial-gradient(circle, var(--dot-color) 1.3px, transparent 1.8px);
+    -webkit-mask-image: linear-gradient(90deg, #000 0, transparent calc(50% - var(--content-half)), transparent calc(50% + var(--content-half)), #000 100%);
+            mask-image: linear-gradient(90deg, #000 0, transparent calc(50% - var(--content-half)), transparent calc(50% + var(--content-half)), #000 100%);
+}
+/* a soft band of brighter dots drifting down the page */
+.stApp::after {
+    background-image: radial-gradient(circle, var(--dot-glow) 1.5px, transparent 2px);
+    opacity: .45;
+    -webkit-mask-image: linear-gradient(90deg, #000 0, transparent calc(50% - var(--content-half)), transparent calc(50% + var(--content-half)), #000 100%),
+                        linear-gradient(180deg, transparent 0, #000 50%, transparent 100%);
+            mask-image: linear-gradient(90deg, #000 0, transparent calc(50% - var(--content-half)), transparent calc(50% + var(--content-half)), #000 100%),
+                        linear-gradient(180deg, transparent 0, #000 50%, transparent 100%);
+    -webkit-mask-composite: source-in;
+            mask-composite: intersect;
+    -webkit-mask-size: 100% 100%, 100% 140vh;
+            mask-size: 100% 100%, 100% 140vh;
+    -webkit-mask-repeat: no-repeat, repeat-y;
+            mask-repeat: no-repeat, repeat-y;
+    animation: dotSweep var(--sweep-time) linear infinite;
+}
+@keyframes dotSweep {
+    from { -webkit-mask-position: 0 0, 0 0;     mask-position: 0 0, 0 0; }
+    to   { -webkit-mask-position: 0 0, 0 140vh; mask-position: 0 0, 0 140vh; }
+}
+@media (prefers-reduced-motion: reduce) { .stApp::after { animation: none; } }
+@media (max-width: 1240px) { .stApp::before, .stApp::after { display: none; } }
 
 /* hide Streamlit chrome */
 #MainMenu, footer, header, [data-testid="stToolbar"] { display: none !important; }
@@ -117,11 +157,13 @@ html, body, .stApp, .stApp * { font-family: 'IBM Plex Sans', -apple-system, 'Seg
 .row .meta  { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
 .note { font-size: 0.95rem; line-height: 1.45; padding: 6px 0 6px 12px; border-left: 2px solid var(--c); margin: 6px 0; }
 
-/* smooth reruns: no dimming, white page background (only on page-level containers) */
+/* smooth reruns: no dimming; page base stays white (containers are transparent so the dots show through) */
 [data-stale="true"] { opacity: 1 !important; transition: none !important; }
 [data-testid="stStatusWidget"] { display: none !important; }
-html, body, .stApp, [data-testid="stAppViewContainer"],
-[data-testid="stAppViewBlockContainer"], .main, .block-container { background-color: #fff !important; }
+html, body, .stApp { background-color: #fff !important; }
+[data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"], .main, .block-container {
+    background-color: transparent !important;
+}
 [data-testid="stSkeleton"] { display: none !important; }
 
 .results { display: grid; grid-template-columns: 5fr 7fr; gap: 3rem; animation: fadeIn .2s ease; }
@@ -133,21 +175,21 @@ html, body, .stApp, [data-testid="stAppViewContainer"],
 )
 
 # ---------------------------------------------------------------- engine
-KB_PATH = "knowledge_store.json"
+CARDS_PATH = "knowledge_cards.json"
 
 
 @st.cache_resource
 def load_engine():
-    return AegisQueryEngine(KB_PATH)
+    return AegisRAGEngine(cards_path=CARDS_PATH)
 
 
 engine = load_engine()
 
 
-@st.cache_data(show_spinner=False)
-def cached_answer(query: str, kb_mtime: float):
+@st.cache_data(show_spinner="Analyzing knowledge base and generating grounded answer...")
+def cached_answer(query: str, cards_mtime: float):
     """Remember answers so repeat questions are instant.
-    kb_mtime makes the cache refresh automatically when knowledge_store.json changes."""
+    cards_mtime makes the cache refresh automatically when knowledge_cards.json changes."""
     return engine.answer_question(query)
 
 
@@ -224,7 +266,7 @@ if not query:
 
 
 try:
-    res = cached_answer(query, os.path.getmtime(KB_PATH))
+    res = cached_answer(query, os.path.getmtime(CARDS_PATH))
 except Exception as exc:  # show a readable message instead of a Streamlit traceback
     slot.markdown(
         f'<div class="answer s-gap"><div class="status">Something went wrong</div>'
@@ -255,25 +297,41 @@ if res.get("uncertainties_or_gaps"):
         f'<div class="note s-gap">{esc(i)}</div>' for i in res["uncertainties_or_gaps"]
     )
 
-# Right panel: evidence
+is_undetermined = "UNDETERMINED" in status
+
+# Right panel: evidence (only for verified / answerable questions)
 claims = res.get("claims") or []
 right_html = ""
-if claims:
-    rows = []
+if claims and not is_undetermined:
+    grouped_claims = {}
     for c in claims:
+        claim_text = c.get("claim", "").strip()
+        if not claim_text:
+            continue
         prov = c.get("provenance", {}) or {}
         doc = prov.get("document", "Unknown document")
         loc = ", ".join(
             f"{k.replace('_', ' ')} {v}" for k, v in prov.items() if k not in ("document", "trust_tier")
         )
         meta = " · ".join(p for p in [doc, loc, c.get("trust_tier", "Tier 2")] if p)
-        rows.append(
-            f'<div class="row"><div class="claim">{esc(c["claim"])}</div>'
-            f'<div class="meta">{esc(meta)}</div></div>'
-        )
-    right_html = f'<div class="sec-title">Evidence ({len(claims)})</div>' + "".join(rows)
 
-slot.markdown(
-    f'<div class="results"><div class="panel">{left_html}</div><div class="panel">{right_html}</div></div>',
-    unsafe_allow_html=True,
-)
+        if claim_text not in grouped_claims:
+            grouped_claims[claim_text] = []
+        if meta and meta not in grouped_claims[claim_text]:
+            grouped_claims[claim_text].append(meta)
+
+    rows = []
+    for claim_text, sources in grouped_claims.items():
+        sources_html = "".join(f'<div class="meta" style="margin-top: 4px;">• {esc(s)}</div>' for s in sources)
+        rows.append(
+            f'<div class="row" style="padding: 12px 0;"><div class="claim" style="font-weight: 500;">{esc(claim_text)}</div>'
+            f'<div style="margin-top: 6px;">{sources_html}</div></div>'
+        )
+    right_html = f'<div class="sec-title">Supporting Evidence & Provenance ({len(rows)})</div>' + "".join(rows)
+
+if right_html:
+    layout_html = f'<div class="results"><div class="panel">{left_html}</div><div class="panel">{right_html}</div></div>'
+else:
+    layout_html = f'<div class="results" style="grid-template-columns: 1fr;"><div class="panel" style="max-width: 820px; margin: 0 auto;">{left_html}</div></div>'
+
+slot.markdown(layout_html, unsafe_allow_html=True)

@@ -12,7 +12,7 @@
       "id": 1,
       "question": "What must be true before starting the Hydraulic Power Unit?",
       "is_answerable": true,
-      "system_answer": "Before starting the Hydraulic Power Unit (HPU), four conditions must be satisfied: (1) Isolation valve IV-21 must be fully OPEN, (2) Emergency stop circuit must be RESET, (3) Maintenance access panel must be CLOSED and secured, and (4) Hydraulic fluid level must be NORMAL (within the sight glass band).",
+      "system_answer": "Before starting the Hydraulic Power Unit (HPU), the following conditions must be satisfied:\n\n1. The Isolation valve IV-21 must be fully OPEN.\n2. The Emergency stop circuit must be RESET (not latched).\n3. The Maintenance access panel must be INSTALLED, CLOSED, and secured.\n4. The Hydraulic fluid level must be NORMAL (within the sight glass band).",
       "system_status": "ANSWERED",
       "system_citations": [
         "operator_manual.pdf",
@@ -36,7 +36,7 @@
       "id": 2,
       "question": "What is the current normal operating pressure for the HPU, and under what conditions does that apply?",
       "is_answerable": true,
-      "system_answer": "The current normal operating pressure for the HPU is 200 bar. This applies specifically to Series-7 units manufactured after 2024 running Software Revision 3.2 or later. For older units running pre-3.2 firmware, the normal operating pressure remains 180 bar.",
+      "system_answer": "The current normal operating pressure for the HPU is 180 bar. This pressure applies to units manufactured before 2024 or running Software Revision < 3.2. For units manufactured after 2024 or running Software Revision >= 3.2, the normal operating pressure is 200 bar.",
       "system_status": "ANSWERED_WITH_VERSION_SCOPE",
       "system_citations": [
         "ECN-1042.pdf",
@@ -57,10 +57,9 @@
       "id": 3,
       "question": "What does alarm A17 indicate, and what are its possible causes?",
       "is_answerable": true,
-      "system_answer": "Alarm A17 indicates 'Hydraulic Pressure Low' (hydraulic pressure below 150 bar, RED panel indication). Its possible causes are: (1) IV-21 closed or partially closed, (2) Low hydraulic fluid, and (3) Pressure sensor signal invalid.",
-      "system_status": "ANSWERED",
+      "system_answer": "Alarm A17 indicates 'Hydraulic Pressure Low' when the hydraulic pressure drops below 150 bar. The possible causes are:\n\n1. IV-21 is closed or partially closed.\n2. There is a low hydraulic fluid level.\n3. The pressure sensor signal is invalid.\n\nThe active sensor for this alarm is PS-04 prior to revision 3.2, and PS-04A on revisions 3.2 and later, as updated per ECN-1058.",
+      "system_status": "ANSWERED_WITH_VERSION_SCOPE",
       "system_citations": [
-        "alarm_reference.pdf",
         "alarm_reference.pdf"
       ],
       "facts_matched": [
@@ -79,8 +78,8 @@
       "id": 4,
       "question": "Is PS-04 the same component as PS-04A?",
       "is_answerable": true,
-      "system_answer": "No. PS-04 is not the same component as PS-04A. PS-04 was the original pressure sensor that suffered signal drift after ~18 months; it was replaced by PS-04A effective Software Revision 3.2 per ECN-1042. PS-04A uses an updated signal conditioning circuit and is NOT a form-fit-function replacement.",
-      "system_status": "ANSWERED",
+      "system_answer": "No, PS-04 is not the same component as PS-04A. PS-04 was the original pressure sensor that suffered signal drift after approximately 18 months in service. It was superseded and replaced by PS-04A effective Software Revision 3.2 per ECN-1042. PS-04A incorporates updated signal conditioning and is NOT a form-fit-function replacement; it requires controller firmware >= 3.2.",
+      "system_status": "ANSWERED_WITH_VERSION_SCOPE",
       "system_citations": [
         "ECN-1042.pdf",
         "component_register.xlsx"
@@ -99,11 +98,11 @@
       "id": 5,
       "question": "Which document introduced the change from PS-04 to PS-04A?",
       "is_answerable": true,
-      "system_answer": "Engineering Change Notice ECN-1042 ('Pressure Sensor Replacement (PS-04 \u2192 PS-04A) and Operating Pressure Update') introduced the change from PS-04 to PS-04A.",
+      "system_answer": "The document that introduced the change from PS-04 to PS-04A was Engineering Change Notice ECN-1042. This notice was responsible for modifying the operating pressure threshold to 200 bar for units manufactured after 2024 and replacing the pressure sensor PS-04 with PS-04A on the HPU discharge line due to sensor drift.",
       "system_status": "ANSWERED",
       "system_citations": [
-        "ECN-1042.pdf",
-        "revision_history.xlsx"
+        "revision_history.xlsx",
+        "ECN-1042.pdf"
       ],
       "facts_matched": [
         "ECN-1042"
@@ -117,7 +116,7 @@
       "id": 6,
       "question": "Which components connect directly to the HCS controller, according to the hydraulic schematic?",
       "is_answerable": true,
-      "system_answer": "According to the hydraulic schematic (drawing AEG-DWG-H01), the components connecting directly to the PLC-03 HCS Controller via purple control/signal lines are: PS-04A, Hydraulic Power Unit (HPU), IV-21.",
+      "system_answer": "According to the hydraulic schematic (drawing AEG-DWG-H01), the components that connect directly to the PLC-03 HCS Controller via purple control/signal lines are:\n\n1. Pressure Sensor PS-04A\n2. Hydraulic Power Unit (HPU)\n3. Isolation Valve IV-21",
       "system_status": "ANSWERED",
       "system_citations": [
         "system_diagram_hydraulic.pdf"
@@ -136,7 +135,7 @@
       "id": 7,
       "question": "What action is required if alarm A17 persists for more than 10 seconds?",
       "is_answerable": true,
-      "system_answer": "If alarm A17 persists for more than 10 seconds, the required action is to execute Shutdown Procedure 4.7: close isolation valve IV-21, confirm pressure decay, set POWER selector to OFF, and tag out per site lockout/tagout procedure.",
+      "system_answer": "If Alarm A17 persists for more than 10 seconds, the operator must immediately execute Shutdown Procedure 4.7 as follows:\n\n1. Close isolation valve IV-21.\n2. Confirm hydraulic pressure decay on gauge/HMI.\n3. Set MAIN POWER selector to OFF.\n4. Apply Lockout/Tagout (LOTO) per facility safety procedure.",
       "system_status": "ANSWERED",
       "system_citations": [
         "alarm_reference.pdf",
@@ -156,11 +155,11 @@
       "id": 8,
       "question": "Under what circumstances must the controller not be reset?",
       "is_answerable": true,
-      "system_answer": "The PLC-03 controller must NOT be reset while hydraulic pressure is above 50 bar. Controller reset is strictly permitted only when pressure, as reported by the active pressure sensor, is below 50 bar.",
+      "system_answer": "The controller must not be reset when hydraulic system pressure is above 50 bar. This restriction is implemented to prevent uncontrolled valve actuation or hydraulic shock during pressurized conditions.",
       "system_status": "ANSWERED",
       "system_citations": [
         "maintenance_manual.pdf",
-        "operator_manual.pdf"
+        "configuration_export.json"
       ],
       "facts_matched": [
         "50 bar",
@@ -175,11 +174,11 @@
       "id": 9,
       "question": "What was the operating pressure threshold before software revision 3.2, and what changed it?",
       "is_answerable": true,
-      "system_answer": "Before software revision 3.2, the normal operating pressure threshold was 180 bar. It was changed to 200 bar by Engineering Change Notice ECN-1042.",
+      "system_answer": "The operating pressure threshold before software revision 3.2 was 180 bar. The threshold was changed to 200 bar for units manufactured after 2024, as per Engineering Change Notice ECN-1042.",
       "system_status": "ANSWERED",
       "system_citations": [
-        "ECN-1042.pdf",
-        "revision_history.xlsx"
+        "revision_history.xlsx",
+        "ECN-1042.pdf"
       ],
       "facts_matched": [
         "180 bar",
@@ -194,8 +193,8 @@
       "id": 10,
       "question": "Which alarm is associated with a pressure sensor reading below 150 bar?",
       "is_answerable": true,
-      "system_answer": "Alarm A17 (Hydraulic Pressure Low) is associated with a pressure sensor reading below 150 bar.",
-      "system_status": "ANSWERED",
+      "system_answer": "Alarm A17 is associated with a pressure sensor reading below 150 bar.",
+      "system_status": "ANSWERED_WITH_VERSION_SCOPE",
       "system_citations": [
         "alarm_reference.pdf"
       ],
@@ -211,10 +210,10 @@
       "id": 11,
       "question": "According to the component register, what is the location of the isolation valve IV-21?",
       "is_answerable": true,
-      "system_answer": "According to the component register, the location of isolation valve IV-21 is the 'Hydraulic Module'.",
+      "system_answer": "The isolation valve IV-21 is located in the Hydraulic Module.",
       "system_status": "ANSWERED",
       "system_citations": [
-        "component_register.xlsx"
+        "component_register.xlsx, operator_manual.pdf, configuration_export.json"
       ],
       "facts_matched": [
         "Hydraulic Module"
@@ -228,10 +227,11 @@
       "id": 12,
       "question": "Does the training slide deck introduce any component or alarm not found in the manuals?",
       "is_answerable": true,
-      "system_answer": "Yes. The training slide deck introduces the 'Auxiliary Reservoir'. Slide 2 explicitly states: 'Note: \u201cAuxiliary Reservoir\u201d is a Line 4/5-specific configuration detail and is not covered in the standard Operator Manual.'",
+      "system_answer": "Yes, the training slide deck introduces the 'Auxiliary Reservoir' which is specific to Line 4 and Line 5 skids for peak demand top-up. This component is connected to the Main Reservoir via a tan reservoir interconnect line and is NOT documented in the baseline Operator Manual.",
       "system_status": "ANSWERED",
       "system_citations": [
-        "training_slide_excerpt.pptx"
+        "training_slide_excerpt.pptx",
+        "system_diagram_hydraulic.pdf"
       ],
       "facts_matched": [
         "Auxiliary Reservoir"
@@ -245,11 +245,10 @@
       "id": 13,
       "question": "What sensor ID appears on the diagnostics screenshot, and does it match a known component?",
       "is_answerable": true,
-      "system_answer": "The sensor ID that appears on the diagnostics screenshot is 'P.S.04-A'. Yes, it matches known component PS-04A. A note at the bottom of the screen explicitly explains: 'this screen displays the sensor tag as printed on the physical unit label.'",
+      "system_answer": "The sensor ID that appears on the diagnostics screenshot is 'P.S.04-A'. This sensor ID is an alias for the canonical component PS-04A.",
       "system_status": "ANSWERED",
       "system_citations": [
-        "screen_03_diagnostics.png",
-        "component_register.xlsx, wiring_diagram.pdf"
+        "screen_03_diagnostics.png"
       ],
       "facts_matched": [
         "P.S.04-A",
@@ -264,7 +263,7 @@
       "id": 14,
       "question": "Per the revision history, when did software revision 3.2 take effect, and what changed alongside it?",
       "is_answerable": true,
-      "system_answer": "Per the revision history, Software Revision 3.2 took effect on 2025-09-30 (September 30, 2025). Alongside it: (1) Pressure sensor PS-04 was replaced by PS-04A, and (2) The normal HPU discharge pressure setpoint was changed from 180 bar to 200 bar (per ECN-1042).",
+      "system_answer": "Software Revision 3.2 took effect on 2025-09-30, as stated in ECN-1042. The revision history also mentions that before software revision 3.2, the operating pressure threshold was 180 bar. However, after the revision, the operating pressure threshold was changed to 200 bar for units manufactured after 2024. Additionally, the pressure sensor PS-04 was replaced with PS-04A on the HPU discharge line due to sensor drift.",
       "system_status": "ANSWERED",
       "system_citations": [
         "revision_history.xlsx",
@@ -286,7 +285,7 @@
       "id": 15,
       "question": "What does sensor_ps04a_threshold_bar in the configuration export correspond to in the operator manual's terminology?",
       "is_answerable": true,
-      "system_answer": "In the operator manual's terminology, 'sensor_ps04a_threshold_bar' (value 200) in the configuration export corresponds to the 'normal operating pressure' or 'normal HPU discharge pressure setpoint'.",
+      "system_answer": "The 'sensor_ps04a_threshold_bar' in the configuration export corresponds to the 'Normal Operating Pressure' and 'normal discharge pressure' (HPU discharge setpoint) in the Operator Manual.",
       "system_status": "ANSWERED",
       "system_citations": [
         "configuration_export.json",
@@ -305,10 +304,12 @@
       "id": 16,
       "question": "Does the 200 bar threshold apply to all Aegis HCS units, or only some?",
       "is_answerable": true,
-      "system_answer": "The 200 bar threshold applies to only some Aegis HCS units: specifically, Series-7 units manufactured after 2024 running Software Revision 3.2 or later. Units running software revisions prior to 3.2 remain installed with PS-04 and operate at the 180 bar setpoint.",
-      "system_status": "ANSWERED",
+      "system_answer": "The 200 bar threshold applies to only some Aegis HCS units. Specifically, units manufactured after 2024 running Software Revision >= 3.2 as per ECN-1042. For older units running pre-3.2 firmware, the normal operating pressure remains 180 bar.",
+      "system_status": "ANSWERED_WITH_VERSION_SCOPE",
       "system_citations": [
-        "ECN-1042.pdf"
+        "ECN-1042.pdf",
+        "legacy_manual_v1.html / operator_manual.pdf",
+        "site_survey_notes.docx"
       ],
       "facts_matched": [
         "only some",
@@ -324,11 +325,11 @@
       "id": 17,
       "question": "Is PS-04 the same as PS-40?",
       "is_answerable": true,
-      "system_answer": "No, PS-04 is not the same as PS-40 (they are completely distinct components). PS-04 was the original pressure sensor installed on the HPU discharge line. PS-40 is a separate pressure sensor located on the Coolant Loop in Skid B. The Component Register explicitly instructs: 'NOT related to the HPU discharge circuit. Do not confuse with PS-04 / PS-04A.'",
+      "system_answer": "No, PS-04 is not the same as PS-40. They are completely separate, distinct components located in different systems. PS-04 monitors HPU hydraulic discharge pressure on Skid A, while PS-40 is located in the Cooling System (Coolant Loop) on Skid B. They share no functional or physical overlap and must not be confused.",
       "system_status": "ANSWERED",
       "system_citations": [
         "component_register.xlsx",
-        "component_register.xlsx"
+        "configuration_export.json"
       ],
       "facts_matched": [
         "not the same",
@@ -343,11 +344,11 @@
       "id": 18,
       "question": "What was the pressure limit before revision 3.2?",
       "is_answerable": true,
-      "system_answer": "Before Software Revision 3.2, the normal operating pressure setpoint was 180 bar.",
+      "system_answer": "The pressure limit before revision 3.2 was 180 bar.",
       "system_status": "ANSWERED",
       "system_citations": [
-        "ECN-1042.pdf",
-        "scanned_appendix_calibration.pdf"
+        "revision_history.xlsx",
+        "ECN-1042.pdf"
       ],
       "facts_matched": [
         "180 bar"
@@ -361,10 +362,10 @@
       "id": 19,
       "question": "What is the maximum continuous operating temperature of PS-04A?",
       "is_answerable": false,
-      "system_answer": "Undetermined / Not specified in official documentation. Neither ECN-1042, the manuals, nor the calibration datasheet state a maximum continuous operating temperature rating for PS-04A.",
+      "system_answer": "UNDETERMINED / NOT SPECIFIED / NOT DOCUMENTED. Neither ECN-1042, the operator manual, maintenance manual, nor the calibration appendix specify a maximum continuous operating temperature rating for pressure sensor PS-04A.",
       "system_status": "UNDETERMINED",
       "system_citations": [
-        "None (Corpus Gap)"
+        "ECN-1042.pdf, scanned_appendix_calibration.pdf"
       ],
       "facts_matched": [
         "undetermined",
@@ -379,7 +380,7 @@
       "id": 20,
       "question": "What is the calibration interval for the electrical system diagram's voltage sensor?",
       "is_answerable": false,
-      "system_answer": "Undetermined / Not specified: No voltage sensor exists on the electrical system diagram (AEG-DWG-E02); the diagram contains disconnect Q1, transformer T1, 24VDC power supply, and relay KA1, but no voltage sensor, so no calibration interval is specified.",
+      "system_answer": "UNDETERMINED / NOT SPECIFIED / FALSE PREMISE. The electrical system diagram (AEG-DWG-E02) has no voltage sensor (does NOT contain a voltage sensor). The schematic shows disconnect Q1, transformer T1, 24VDC power supply, PLC-03 rack, relay KA1, and valve driver, but no voltage sensor exists. Therefore, no calibration interval exists.",
       "system_status": "UNDETERMINED",
       "system_citations": [
         "system_diagram_electrical.png"
@@ -398,7 +399,7 @@
       "id": 21,
       "question": "Who approved engineering bulletin ECN-1058?",
       "is_answerable": false,
-      "system_answer": "Undetermined / Not specified in the documentation. Engineering Bulletin ECN-1058 lists the ECN number, title, effective date, references, and status ('Released'), but completely omits an approver, author, or signatory field.",
+      "system_answer": "UNDETERMINED / NOT SPECIFIED. Engineering Bulletin ECN-1058 lists the ECN number, title, effective date, and status ('Released'), but completely omits an approver, author, or signature field. The approver cannot be determined from the official documentation.",
       "system_status": "UNDETERMINED",
       "system_citations": [
         "ECN-1058.pdf"
@@ -416,10 +417,10 @@
       "id": 22,
       "question": "What is the mean time between failures for the isolation valve IV-21?",
       "is_answerable": false,
-      "system_answer": "Undetermined / Not specified in the documentation. The documentation package does not state the mean time between failures (MTBF) or reliability figures for isolation valve IV-21.",
+      "system_answer": "UNDETERMINED / NOT SPECIFIED / NOT DOCUMENTED. The documentation corpus does not contain Mean Time Between Failures (MTBF) or reliability metrics for isolation valve IV-21.",
       "system_status": "UNDETERMINED",
       "system_citations": [
-        "None (Corpus Gap)"
+        "component_register.xlsx, operator_manual.pdf"
       ],
       "facts_matched": [
         "undetermined",
@@ -434,7 +435,7 @@
       "id": 23,
       "question": "Is the Aegis Series-7 HCS compatible with a 3-phase 400V supply?",
       "is_answerable": true,
-      "system_answer": "No, it is not compatible based on official documentation. The Aegis Series-7 HCS electrical distribution system is specifically engineered for a 480V supply: Main Disconnect Q1 is a 480V incoming disconnect, and Control Transformer T1 is rated 480:120V. A 3-phase 400V supply is not supported or specified in the documentation package.",
+      "system_answer": "No, the Aegis Series-7 HCS is not compatible with a 3-phase 400V supply. The electrical schematic (AEG-DWG-E02) and component register explicitly specify an incoming main disconnect Q1 rated for 480V and a control transformer T1 with a 480:120V step-down ratio. The 400V supply is not supported in the standard documentation.",
       "system_status": "ANSWERED",
       "system_citations": [
         "component_register.xlsx",
