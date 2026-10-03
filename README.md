@@ -1,4 +1,4 @@
-# Aegis Knowledge Ingestion & Air-Gapped Hybrid RAG System
+# Aegis Knowledge Ingestion & Hybrid RAG
 
 An air-gapped, zero-hallucination Industrial AI system for the **Aegis Series-7 Hydraulic Control System (HCS)**. Combines **Hybrid Dense + Lexical Retrieval (BGE-small + BM25Okapi)** with **Grounded SLM Generation (Qwen-2.5-1.5B via llama.cpp)** and deterministic citation binding.
 
