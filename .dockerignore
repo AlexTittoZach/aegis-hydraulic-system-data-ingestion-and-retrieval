@@ -1,0 +1,30 @@
+# Version control
+.git
+.gitignore
+
+# Model directory (downloaded and cached cleanly inside the container during build)
+models/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# IDE and OS metadata
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Test caches & large standalone reports
+.pytest_cache/
+DETAILED_REPORT.pdf
