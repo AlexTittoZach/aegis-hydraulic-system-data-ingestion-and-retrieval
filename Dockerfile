@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
     curl \
+    git \
     tesseract-ocr \
     poppler-utils \
     && rm -rf /var/lib/apt/lists/*
@@ -15,9 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory
 WORKDIR /app
 
-# Install Python requirements
+# Install Python requirements with pre-built CPU wheels for llama-cpp-python
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
 
 # Download model weights and pre-cache embeddings during image build
 # Once built, the container image is 100% self-contained and air-gapped
